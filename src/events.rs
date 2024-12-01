@@ -9,6 +9,7 @@ const FAILURE_MESSAGE: &str = "{\"message\": \"failed to serialize data\"}";
 
 pub trait EventData: Serialize + DeserializeOwned + Send + EventMeta {}
 
+/// Trait used to allow inference of type and group IDs at the trait boundary.
 pub trait EventMeta {
     fn get_group_id() -> u32;
     fn get_type_id() -> u32;
@@ -74,7 +75,7 @@ where
         .collect();
 
         if let Some(uuid) = self.correlation_id {
-            attributes.insert("correlation_id".into(), uuid.into());
+            attributes.insert("correlation_id".to_string(), uuid);
         }
 
         PubsubMessage {

@@ -5,9 +5,10 @@ use google_cloud_pubsub::client::Client;
 // TODO investigate means to pass about the same singleton publisher/sub instances.
 pub async fn publish_event_and_return_response<Req, Res>(
     client: &Client,
-    topic_id: &str,
+    request_topic: &str,
+    response_topic: &str,
     event_to_publish: Event<Req>,
-) -> Event<Res>
+) -> Result<Event<Res>, ()>
 where
     Req: EventData,
     Res: EventData + 'static,
@@ -19,13 +20,12 @@ where
         .clone()
         .expect("Need correlation ID");
 
-    let subscription = client.subscription(topic_id);
+    let subscription = client.subscription(response_topic);
 
-    let publisher = client.topic(topic_id).new_publisher(None);
-    let awaiter = publisher.publish(event_to_publish.into()).await;
-    let await_result = awaiter.get().await;
+    let publisher = client.topic(request_topic).new_publisher(None);
+    let awaiter = publisher.publish(event_to_publish.into()).await.get().await;
 
-    match await_result {
+    match awaiter {
         Ok(_) => println!("Request sent!"),
         Err(err_status) => println!("Error status is {}", err_status),
     }
@@ -51,9 +51,11 @@ where
                     .get("correlation_id")
                     .expect("Failed to get correlation ID");
 
+                println!("got message with type id {} and correlation_id {}", type_id, correlation_id);
+
                 if type_id == response_type_id && correlation_id == &expected_correlation_id {
                     message.ack().await.expect("Failed to acknowledge message");
-                    return message.message.into();
+                    return Ok(message.message.into());
                 }
             }
         }
