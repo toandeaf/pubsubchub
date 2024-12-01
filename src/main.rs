@@ -1,13 +1,16 @@
-use crate::events::{ConfigRequestContent, ConfigResponseContent, Event, JsonData};
-use crate::publish::publish_event;
+use crate::config::{
+    ConfigRequestContent, ConfigRequestEvent, ConfigResponseContent,
+};
+use crate::events::{Event, EventCreator, JsonData};
+use crate::publish::publish_event_and_return_response;
 use crate::setup::setup;
 use crate::subscribe::consume_event;
 use juniper::futures::StreamExt;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use uuid::Uuid;
 
+mod config;
 mod events;
 mod publish;
 mod setup;
@@ -20,15 +23,11 @@ async fn main() {
     #[cfg(feature = "publish")]
     {
         // TODO add ::new as the only public accessor constructor
-        let event: Event<ConfigRequestContent> = Event {
-            type_id: 1,
-            group_id: 1,
-            correlation_id: Some(Uuid::new_v4().to_string()),
-            content: ConfigRequestContent { config_id: 1 },
-        };
+        let content = ConfigRequestContent { config_id: 1 };
+        let event = ConfigRequestEvent::create_event(content);
 
         let returned_event: Event<ConfigResponseContent> =
-            publish_event(&client, "config", event).await;
+            publish_event_and_return_response(&client, "config", event).await;
 
         print!(
             "Returned event is {}",

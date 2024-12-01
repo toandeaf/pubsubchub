@@ -1,12 +1,17 @@
 use google_cloud_googleapis::pubsub::v1::PubsubMessage;
 use serde::de::DeserializeOwned;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use std::collections::HashMap;
 use std::string::ToString;
 
 const FAILURE_MESSAGE: &str = "{\"message\": \"failed to serialize data\"}";
 
 pub trait JsonData: Serialize + DeserializeOwned {}
+
+pub trait EventCreator<T> where T: JsonData {
+    fn create_event(content: T) -> Event<T>;
+    fn create_response_event(content: T, correlation_id: String) -> Event<T>;
+}
 
 pub struct Event<T>
 where
@@ -18,7 +23,10 @@ where
     pub content: T,
 }
 
-impl<T: JsonData> Into<Event<T>> for PubsubMessage {
+impl<T> Into<Event<T>> for PubsubMessage
+where
+    T: JsonData,
+{
     fn into(self) -> Event<T> {
         let type_id = self
             .attributes
@@ -45,7 +53,10 @@ impl<T: JsonData> Into<Event<T>> for PubsubMessage {
     }
 }
 
-impl<T: JsonData> Into<PubsubMessage> for Event<T> {
+impl<T> Into<PubsubMessage> for Event<T>
+where
+    T: JsonData,
+{
     fn into(self) -> PubsubMessage {
         let data = serde_json::to_string(&self.content)
             .unwrap_or(FAILURE_MESSAGE.to_string())
@@ -67,18 +78,3 @@ impl<T: JsonData> Into<PubsubMessage> for Event<T> {
         }
     }
 }
-
-// Custom Event POCs
-#[derive(Serialize, Deserialize)]
-pub struct ConfigRequestContent {
-    pub config_id: u32,
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct ConfigResponseContent {
-    pub configs: HashMap<String, String>,
-}
-
-// TODO investigate whether this makes sense.
-impl JsonData for ConfigResponseContent {}
-impl JsonData for ConfigRequestContent {}

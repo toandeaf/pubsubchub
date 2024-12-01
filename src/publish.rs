@@ -3,7 +3,7 @@ use google_cloud_gax::grpc::codegen::tokio_stream::StreamExt;
 use google_cloud_pubsub::client::Client;
 
 // TODO investigate means to pass about the same singleton publisher/sub instances.
-pub async fn publish_event<Req, Res>(
+pub async fn publish_event_and_return_response<Req, Res>(
     client: &Client,
     topic_id: &str,
     event_to_publish: Event<Req>,
