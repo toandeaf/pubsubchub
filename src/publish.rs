@@ -1,4 +1,4 @@
-use crate::events::{Event, JsonData};
+use crate::events::{Event, EventData, EventMeta};
 use google_cloud_gax::grpc::codegen::tokio_stream::StreamExt;
 use google_cloud_pubsub::client::Client;
 
@@ -9,11 +9,11 @@ pub async fn publish_event_and_return_response<Req, Res>(
     event_to_publish: Event<Req>,
 ) -> Event<Res>
 where
-    Req: JsonData,
-    Res: JsonData + Send + 'static,
+    Req: EventData,
+    Res: EventData + 'static,
 {
-    // TODO dynamic inference of response type_id
-    let response_type_id: u32 = 2;
+    let response_type_id: u32 = Res::get_type_id();
+
     let expected_correlation_id = event_to_publish
         .correlation_id
         .clone()

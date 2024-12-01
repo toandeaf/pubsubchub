@@ -1,11 +1,11 @@
-use crate::events::{Event, JsonData};
+use crate::events::{Event, EventData};
 use google_cloud_gax::grpc::codegen::tokio_stream::StreamExt;
 use google_cloud_pubsub::client::Client;
 
 pub async fn consume_event<Req, Res, Function>(client: &Client, topic_id: &str, function: Function)
 where
-    Req: JsonData,
-    Res: JsonData,
+    Req: EventData,
+    Res: EventData,
     Function: Fn(Event<Req>) -> Event<Res>,
 {
     // TODO dynamic inference of request type_id
