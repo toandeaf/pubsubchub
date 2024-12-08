@@ -1,0 +1,20 @@
+GetConfigRequest:
+  topic: config
+  ack_deadline_seconds: 20
+  retain_acked_messages: true
+  message_retention_duration: 600s
+  labels:
+    environment: production
+  enable_message_ordering: true
+  expiration_policy:
+    ttl: 86400s
+  dead_letter_policy:
+    dead_letter_topic: projects/my-project/topics/my-dead-letter-topic
+    max_delivery_attempts: 5
+  retry_policy:
+    minimum_backoff: 10s
+    maximum_backoff: 600s
+  push_config:
+    push_endpoint: https://my-endpoint.com/push
+    attributes:
+      x-goog-version: v1

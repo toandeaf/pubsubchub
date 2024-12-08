@@ -1,0 +1,14 @@
+ConfigTopic:
+  labels:
+    - environment: production
+  message_storage_policy:
+    allowed_persistence_regions:
+      - us-central1
+      - us-east1
+  schema_settings:
+    schema: ../data/config.yml#GetConfigRequest
+    encoding: JSON
+  message_retention_duration: 600s
+  enable_message_ordering: true
+  expiration_policy:
+    ttl: 86400s

@@ -1,0 +1,23 @@
+GetConfigRequest:
+  type: object
+  properties:
+    id:
+      type: string
+      example: "123"
+GetConfigResponse:
+  type: object
+  properties:
+    id:
+      type: string
+      example: "123"
+    configs:
+        type: array
+        items:
+            type: object
+            properties:
+            key:
+                type: string
+                example: "key"
+            value:
+                type: string
+                example: "value"
