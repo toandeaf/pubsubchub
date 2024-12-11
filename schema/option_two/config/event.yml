@@ -1,0 +1,18 @@
+GetConfig:
+  group_id: 1
+  GetConfigRequest:
+    type_id: 1
+    type: sync
+    payload: "./payload.yml#GetConfigRequest"
+    topics:
+      - GetConfig
+    metadata:
+      key: value
+  GetConfigResponse:
+    type_id: 2
+    type: sync
+    payload: "./payload.yml#GetConfigResponse"
+    topics:
+      - GetConfig
+    metadata:
+      key: value

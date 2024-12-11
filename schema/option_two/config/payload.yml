@@ -1,0 +1,30 @@
+GetConfigRequest:
+  config_id:
+    type: int
+    required: true
+    format: int32
+    description: The ID of the configuration to retrieve
+  email:
+    type: string
+    required: false
+
+GetConfigResponse:
+  data:
+    type: string
+    required: false
+    description: The ID of the configuration to retrieve
+
+GetConfig:
+  config_id:
+    type: int
+    required: true
+    format: int32
+    description: The ID of the configuration to retrieve
+  email:
+    type: string
+    required: false
+    description: The email of the user requesting the configuration
+  username:
+    type: string
+    required: false
+    description: The username of the user requesting the configuration

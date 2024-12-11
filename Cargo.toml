@@ -12,6 +12,7 @@ serde = "1.0.215"
 serde_json = "1.0.133"
 tokio = { version = "1.41.1",  features = ["rt-multi-thread"] }
 uuid = { version = "1.11.0", features = ["v4"] }
+serde_yaml = "0.9.34+deprecated"
 
 [features]
 publish = []
